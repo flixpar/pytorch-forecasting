@@ -203,7 +203,7 @@ class MASE(MultiHorizonMetric):
 
         # weight samples
         if weight is not None:
-            losses = losses * weight.unsqueeze(-1)
+            losses = losses * unsqueeze_like(weight, losses)
 
         self._update_losses_and_lengths(losses, lengths)
 

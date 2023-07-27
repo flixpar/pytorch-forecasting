@@ -786,6 +786,8 @@ class BaseModel(InitialParameterRepresenterMixIn, LightningModule, TupleOutputMi
                     loss = self.loss(prediction, y)
             else:
                 loss = None
+        if self.loss.reduction == "none":
+            loss = loss.mean()
         self.log(
             f"{self.current_stage}_loss",
             loss,
