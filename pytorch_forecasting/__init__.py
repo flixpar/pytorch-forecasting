@@ -44,6 +44,7 @@ from pytorch_forecasting.models import (
     RecurrentNetwork,
     TemporalFusionTransformer,
     TiDE,
+    DecoderTransformer,
     get_rnn,
 )
 from pytorch_forecasting.utils import (
@@ -70,6 +71,7 @@ __all__ = [
     "NBeats",
     "NHiTS",
     "TiDE",
+	"DecoderTransformer",
     "Baseline",
     "DeepAR",
     "BaseModel",

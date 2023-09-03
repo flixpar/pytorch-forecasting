@@ -16,6 +16,7 @@ from pytorch_forecasting.models.nn import GRU, LSTM, MultiEmbedding, get_rnn
 from pytorch_forecasting.models.rnn import RecurrentNetwork
 from pytorch_forecasting.models.temporal_fusion_transformer import TemporalFusionTransformer
 from pytorch_forecasting.models.tide import TiDE
+from pytorch_forecasting.models.transformer import DecoderTransformer
 
 __all__ = [
     "NBeats",
@@ -34,4 +35,5 @@ __all__ = [
     "MultiEmbedding",
     "DecoderMLP",
     "TiDE",
+    "DecoderTransformer",
 ]
