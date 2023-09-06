@@ -149,6 +149,21 @@ class RMSE(MultiHorizonMetric):
         return loss
 
 
+class RMSLE(MultiHorizonMetric):
+    """
+    Root mean square log error
+
+    Defined as ``(log(y_pred + 1) - log(target + 1))**2``
+    """
+    def __init__(self, reduction="sqrt-mean", **kwargs):
+        super().__init__(reduction=reduction, **kwargs)
+
+    def loss(self, y_pred, target):
+        y_pred = self.to_prediction(y_pred)
+        loss = torch.pow(torch.log(y_pred + 1) - torch.log(target + 1), 2)
+        return loss
+
+
 class MASE(MultiHorizonMetric):
     """
     Mean absolute scaled error
