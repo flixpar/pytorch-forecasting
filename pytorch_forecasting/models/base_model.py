@@ -407,6 +407,7 @@ class BaseModel(InitialParameterRepresenterMixIn, LightningModule, TupleOutputMi
         monotone_constaints: Dict[str, int] = {},
         output_transformer: Callable = None,
         optimizer="Ranger",
+        **kwargs,
     ):
         """
         BaseModel for timeseries forecasting from which to inherit from

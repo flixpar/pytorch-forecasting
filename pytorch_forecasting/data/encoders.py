@@ -315,8 +315,10 @@ class NaNLabelEncoder(InitialParameterRepresenterMixIn, BaseEstimator, Transform
             if self.warn:
                 cond = np.array([item not in self.classes_ for item in y])
                 if cond.any():
+                    missing_items = [item for item in y if item not in self.classes_]
+                    missing_items = np.unique(missing_items)
                     warnings.warn(
-                        f"Found {np.unique(np.asarray(y)[cond]).size} unknown classes which were set to NaN",
+                        f"Found {np.unique(np.asarray(y)[cond]).size} unknown classes which were set to NaN: {missing_items}",
                         UserWarning,
                     )
 
