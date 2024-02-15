@@ -129,6 +129,10 @@ class TiDE(BaseModelWithCovariates):
 
         n_targets = len(self.target_names)
 
+        if isinstance(output_size, list):
+            assert all(output_size[i] == output_size[0] for i in range(len(output_size))), "output_size must be a list of equal values"
+            output_size = output_size[0]
+
         self.model = _TideModule(
             input_chunk_length=self.hparams.context_length,
             output_chunk_length=self.hparams.prediction_length,
@@ -226,6 +230,8 @@ class TiDE(BaseModelWithCovariates):
         forecast = forecast.permute(2, 0, 1, 3)  # n_outputs x n_samples x n_timesteps x output_size
         if forecast.shape[0] == 1:
             forecast = forecast.squeeze(0)  # n_samples x n_timesteps x output_size
+        else:
+            forecast = [f.squeeze(0) for f in forecast.split(1, dim=0)]  # n_outputs * (n_samples x n_timesteps x output_size)
 
         return self.to_network_output(
             prediction=self.transform_output(
