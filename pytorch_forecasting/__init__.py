@@ -46,6 +46,7 @@ from pytorch_forecasting.models import (
     TemporalFusionTransformer,
     TiDE,
     DecoderTransformer,
+	ITransformer,
 	DLinear,
     get_rnn,
 )
@@ -74,6 +75,7 @@ __all__ = [
     "NHiTS",
     "TiDE",
 	"DecoderTransformer",
+	"ITransformer",
 	"DLinear",
     "Baseline",
     "DeepAR",
