@@ -17,6 +17,7 @@ from pytorch_forecasting.models.rnn import RecurrentNetwork
 from pytorch_forecasting.models.temporal_fusion_transformer import TemporalFusionTransformer
 from pytorch_forecasting.models.tide import TiDE
 from pytorch_forecasting.models.transformer import DecoderTransformer
+from pytorch_forecasting.models.dlinear import DLinear
 
 __all__ = [
     "NBeats",
@@ -36,4 +37,5 @@ __all__ = [
     "DecoderMLP",
     "TiDE",
     "DecoderTransformer",
+	"DLinear",
 ]
