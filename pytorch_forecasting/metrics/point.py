@@ -134,6 +134,44 @@ class CrossEntropy(MultiHorizonMetric):
         return y_pred
 
 
+class BinaryCrossEntropy(MultiHorizonMetric):
+    """
+    Cross entropy loss for classification.
+    """
+
+    def loss(self, y_pred, target):
+        loss = F.binary_cross_entropy(y_pred.squeeze(), target.float().squeeze(), reduction="none")
+        return loss
+
+    def to_prediction(self, y_pred: torch.Tensor) -> torch.Tensor:
+        """
+        Convert network prediction into a point prediction.
+
+        Returns best label
+
+        Args:
+            y_pred: prediction output of network
+
+        Returns:
+            torch.Tensor: point prediction
+        """
+        return (y_pred > 0.5).to(torch.int)
+
+    def to_quantiles(self, y_pred: torch.Tensor, quantiles: List[float] = None) -> torch.Tensor:
+        """
+        Convert network prediction into a quantile prediction.
+
+        Args:
+            y_pred: prediction output of network
+            quantiles (List[float], optional): quantiles for probability range. Defaults to quantiles as
+                as defined in the class initialization.
+
+        Returns:
+            torch.Tensor: prediction quantiles
+        """
+        return y_pred
+
+
 class RMSE(MultiHorizonMetric):
     """
     Root mean square error
