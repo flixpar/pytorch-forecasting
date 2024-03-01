@@ -105,7 +105,7 @@ class MinusOneTransform(Transform):
         return y + 1.0
 
     def log_abs_det_jacobian(self, x, y):
-        return 0.0
+        return torch.tensor(0.0).to(x)
 
 
 class ReLuTransform(Transform):
@@ -124,7 +124,7 @@ class ReLuTransform(Transform):
         return y
 
     def log_abs_det_jacobian(self, x, y):
-        return 0.0
+        return torch.tensor(0.0).to(x)
 
 
 class TransformMixIn:
