@@ -738,10 +738,11 @@ class MultiHorizonMetric(Metric):
     Abstract class for defining metric for a multihorizon forecast
     """
 
-    def __init__(self, reduction: str = "mean", **kwargs) -> None:
+    def __init__(self, reduction: str = "mean", horizon_weights: torch.Tensor = None, **kwargs) -> None:
         super().__init__(reduction=reduction, **kwargs)
         self.add_state("losses", default=torch.tensor(0.0), dist_reduce_fx="sum" if reduction != "none" else "cat")
         self.add_state("lengths", default=torch.tensor(0), dist_reduce_fx="sum" if reduction != "none" else "mean")
+        self.horizon_weights = horizon_weights
 
     def loss(self, y_pred: Dict[str, torch.Tensor], target: torch.Tensor) -> torch.Tensor:
         """
@@ -789,7 +790,7 @@ class MultiHorizonMetric(Metric):
 
     def _update_losses_and_lengths(self, losses: torch.Tensor, lengths: torch.Tensor):
         losses = self.mask_losses(losses, lengths)
-        if self.reduction == "none":
+        if self.reduction == "none" or self.reduction == "weighted-mean":
             if self.losses.ndim == 0:
                 self.losses = losses
                 self.lengths = lengths
@@ -837,7 +838,7 @@ class MultiHorizonMetric(Metric):
                 losses = losses.masked_fill(mask, 0.0) / dim_normalizer
         return losses
 
-    def reduce_loss(self, losses: torch.Tensor, lengths: torch.Tensor, reduction: str = None) -> torch.Tensor:
+    def reduce_loss(self, losses: torch.Tensor, lengths: torch.Tensor, reduction: str = None, weights: torch.Tensor = None) -> torch.Tensor:
         """
         Reduce loss.
 
@@ -858,6 +859,16 @@ class MultiHorizonMetric(Metric):
         elif reduction == "sqrt-mean":
             loss = losses.sum() / lengths.sum()
             loss = loss.sqrt()
+        elif reduction == "weighted-mean":
+            if weights is None and self.horizon_weights is not None:
+                self.horizon_weights = self.horizon_weights.to(losses)
+                weights = self.horizon_weights
+            assert weights is not None, "Weights have to be provided for weighted mean reduction"
+            assert (weights.sum() - 1).abs() < 1e-5, "Weights have to sum to 1"
+            assert (lengths == weights.size(0)).all(), "All prediction lengths have to match weights length"
+            if losses.ndim == 3:
+                weights = weights.unsqueeze(-1)
+            loss = (losses * weights).mean(dim=0).sum()
         else:
             raise ValueError(f"reduction {reduction} unknown")
         assert not torch.isnan(loss), (
